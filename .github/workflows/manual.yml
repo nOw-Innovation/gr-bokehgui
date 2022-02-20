@@ -58,16 +58,16 @@ jobs:
           wget https://repo.anaconda.com/miniconda/$FILENAME
           sha256sum --check checksha.sha256 && bash $FILENAME -b
           eval "$(${HOME}/miniconda3/bin/conda shell.bash hook)"
-          conda init
+          conda init bash
           conda config --env --add channels conda-forge
           conda config --env --set channel_priority strict
           conda deactivate
-          pushd ~
-          source .bashrc
-          popd
+          exit
 
       - name: Bokeh
+        shell: bash
         run: |
+          export PATH="./:$PATH"
           conda activate
           conda install -y bokeh nodejs numpy scipy pandas
           ~/miniconda3/bin/bokeh info
