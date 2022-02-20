@@ -64,8 +64,8 @@ jobs:
 
       - name: Bokeh
         run: |
-          conda install -y bokeh nodejs numpy scipy pandas          
-          bokeh info
+          conda install -y bokeh nodejs numpy scipy pandas
+          echo TODO: bokeh info
 
       # Run commands using the runners shell
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
