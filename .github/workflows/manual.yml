@@ -88,17 +88,17 @@ jobs:
           cd $GITHUB_WORKSPACE
           conda activate
           echo conda install -qy python=${PYVER#* } 
-          conda install --only-deps -c rsarg gr-bokehgui 
-          conda install --only-deps bokeh=2.3.1
-          conda install nodejs mpir numpy scipy pandas
+          conda install -qy --only-deps -c rsarg gr-bokehgui 
+          conda install -qy --only-deps bokeh=2.3.1
+          conda install -qy nodejs mpir numpy scipy pandas
           pushd $GITHUB_WORKSPACE
-          npm install bokeh bokehjs
+          npm install bokeh @bokeh/bokehjs
           npm audit fix
           popd
   
       - uses: actions/checkout@master
         with:
-          name: bokeh/bokeh
+          repository: bokeh/bokeh
           ref: refs/tags/2.3.1
           path: 'src'
                
