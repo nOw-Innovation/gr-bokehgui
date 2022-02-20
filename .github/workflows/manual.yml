@@ -63,7 +63,7 @@ jobs:
           conda config --env --set channel_priority strict
           conda deactivate
           pushd ~
-          source .profile
+          source .bashrc
           popd
 
       - name: Bokeh
