@@ -48,7 +48,7 @@ jobs:
       - name: GNU ecosystem
         run: |
           sudo apt install -y python3-pip gnuradio gnuradio-dev
-          pip install six
+          pip3 install six
           gnuradio-config-info -v
           grcc -h
 
