@@ -37,12 +37,20 @@ jobs:
           sudo unattended-upgrade -d
 
       - name: Ensure thrid-party apt support is installed
-        run:  sudo apt install -y software-properties-common
+        run: |
+          sudo apt install -y software-properties-common apt-utils 
+          if [ "${matrix.os} = "ubuntu-latest" ]; then
+             sudo add-apt-repository -y ppa:gnuradio/gnuradio-releases-3.9
+          fi
+          sudo apt update
+
 
       - name: GNU ecosystem
         run: |
-          sudo apt install -y gnuradio=3.9.5 gnuradio-dev
-          grcc --version
+          sudo apt install -y python3-pip gnuradio gnuradio-dev
+          pip install six
+          gnuradio-config-info -v
+          grcc -h
 
       # Run commands using the runners shell
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
