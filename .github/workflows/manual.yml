@@ -65,14 +65,17 @@ jobs:
       - name: Bokeh
         run: |
           conda install -y bokeh nodejs numpy scipy pandas
-          echo TODO: bokeh info
-
+          pushd ~
+          source .profile
+          ls -l 
+          echo $PATH
+          bokeh info
+          popd 
+  
       # Run commands using the runners shell
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
       - name: Run a multi-line script
         run: |
           echo $GITHUB_WORKSPACE
-          pwd
-          ls -l 
           echo Add other actions to build,test, and deploy your project.
