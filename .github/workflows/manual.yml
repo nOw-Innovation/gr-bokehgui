@@ -61,16 +61,16 @@ jobs:
           conda init
           conda config --env --add channels conda-forge
           conda config --env --set channel_priority strict
+          conda deactivate
+          pushd ~
+          source .profile
+          popd
 
       - name: Bokeh
         run: |
+          conda activate
           conda install -y bokeh nodejs numpy scipy pandas
-          pushd ~
-          source .profile
-          ls -l 
-          echo $PATH
-          bokeh info
-          popd 
+          ~/miniconda3/bin/bokeh info
   
       # Run commands using the runners shell
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
