@@ -20,6 +20,7 @@ jobs:
         python-version: [ '3.9'  ]
     env:
        MIRROR_ORG: nOw-Innovation
+       OS_CHOICE: ${{ matrix.os }}
        
     # Steps represent a sequence of tasks that will be executed as part of the job
     name: gr-bokeh on ${{ matrix.os }} with python ${{ matrix.python-version }} 
@@ -39,7 +40,7 @@ jobs:
       - name: Ensure thrid-party apt support is installed
         run: |
           sudo apt install -y software-properties-common apt-utils 
-          if [ "${matrix.os}" = "ubuntu-latest" ]; then
+          if [ "${OS_CHOICE}" = "ubuntu-latest" ]; then
              sudo add-apt-repository -y ppa:gnuradio/gnuradio-releases-3.9
           fi
           sudo apt update
