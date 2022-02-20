@@ -13,16 +13,43 @@ jobs:
   # This workflow contains a single job called "populate"
   populate:
     # Run on a single platform or use a matrix to test against several
-    runs-on: ubuntu-latest
-
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+        python-version: [ '3.9'  ]
+    env:
+       MIRROR_ORG: nOw-Innovation
+       
     # Steps represent a sequence of tasks that will be executed as part of the job
+    name: gr-bokeh on ${{ matrix.os }} with python ${{ matrix.python-version }} 
     steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v2
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python-version }}
+          architecture: x64
+       
+      - name: Security first
+        run: |
+          sudo apt update
+          sudo apt install -y unattended-upgrades
+          sudo unattended-upgrade -d
+
+      - name: Ensure thrid-party apt support is installed
+        run:  sudo apt install -y software-properties-common
+
+      - name: GNU ecosystem
+        run: |
+          sudo apt install -y gnuradio=3.9.5 gnuradio-dev
+          grcc --version
 
       # Run commands using the runners shell
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v2
       - name: Run a multi-line script
         run: |
+          echo $GITHUB_WORKSPACE
           pwd
           ls -l 
           echo Add other actions to build,test, and deploy your project.
