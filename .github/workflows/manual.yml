@@ -100,7 +100,7 @@ jobs:
         with:
           repository: bokeh/bokeh
           ref: refs/tags/2.3.1
-          path: 'src'
+          path: 'src/bokeh'
                
       - name: build Bokeh from Source?
         run: |
@@ -115,10 +115,16 @@ jobs:
             fi
           fi
           unset __conda_setup
-          mkdir -p $GITHUB_WORKSPACE
-          cd $GITHUB_WORKSPACE
-          conda activate
-          npm make
+          cd $GITHUB_WORKSPACE/src/bokeh
+          conda env create -f environment.yml
+          conda activate bkdev
+          cd bokehjs
+          sudo npm install -g npm@7
+          npm ci
+          cd ..
+          python scripts/hooks/install.py
+          python setup.py develop
+          python setup.py install --build-js
           echo Add other actions to build,test, and deploy your project.
 
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
