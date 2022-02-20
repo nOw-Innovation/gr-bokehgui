@@ -58,18 +58,27 @@ jobs:
           wget https://repo.anaconda.com/miniconda/$FILENAME
           sha256sum --check checksha.sha256 && bash $FILENAME -b
           eval "$(${HOME}/miniconda3/bin/conda shell.bash hook)"
-          conda init bash
+          conda init -q bash
           conda config --env --add channels conda-forge
           conda config --env --set channel_priority strict
           conda deactivate
           exit
 
       - name: Bokeh
-        shell: bash
         run: |
-          export PATH="./:$PATH"
+          _conda_setup="$('~/miniconda3/bin/conda' 'shell.bash' 'hook' 2> /dev/null)"
+          if [ $? -eq 0 ]; then
+            eval "$__conda_setup"
+          else
+            if [ -f "~/miniconda3/etc/profile.d/conda.sh" ]; then
+              source "~/miniconda3/etc/profile.d/conda.sh"
+          else
+            export PATH="~/miniconda3/bin:$PATH"
+          fi
+          unset __conda_setup
+          PY3VER=$(python3 --version)
           conda activate
-          conda install -y bokeh nodejs numpy scipy pandas
+          conda install -y python=${PYVER#* } bokeh nodejs numpy scipy pandas
           ~/miniconda3/bin/bokeh info
   
       # Run commands using the runners shell
