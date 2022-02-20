@@ -29,14 +29,14 @@ jobs:
           architecture: x64
        
       - name: Make a place to store logs
-        run:  mkdir ~/logs
+        run:  mkdir -p ~/artifacts
 
       - name: Security first
         run: |
           mkdir ~/logs
           sudo apt update
           sudo apt install -y unattended-upgrades
-          sudo unattended-upgrade -d >~/logs/securityFirst.log
+          sudo unattended-upgrade -d >~/artifacts/securityFirst.log
 
       - name: Ensure thrid-party apt support is installed
         run: |
@@ -51,8 +51,8 @@ jobs:
         run: |
           sudo apt install -y python3-pip gnuradio gnuradio-dev
           pip3 install six
-          gnuradio-config-info -v >~/logs/gnuEcosystem.log
-          grcc -h >>~/logs/gnuEcosystem.log
+          gnuradio-config-info -v >~/artifacts/gnuEcosystem.log
+          grcc -h >>~/artifacts/gnuEcosystem.log
 
       - name: Miniconda
         run: |
@@ -85,7 +85,7 @@ jobs:
           PY3VER=$(python3 --version)
           conda activate
           conda install -qy python=${PYVER#* } bokeh nodejs mpir numpy scipy pandas
-          python -m bokeh info
+          python -m bokeh info >~/artifacts/bokeh.log
   
       # Run commands using the runners shell
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
