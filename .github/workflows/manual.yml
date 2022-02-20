@@ -38,7 +38,7 @@ jobs:
           sudo apt install -y unattended-upgrades
           sudo unattended-upgrade -d >~/artifacts/securityFirst.log
 
-      - name: Ensure thrid-party apt support is installed
+      - name: Ensure third-party apt support is installed
         run: |
           sudo apt install -y software-properties-common apt-utils 
           if [ "${OS_CHOICE}" = "ubuntu-latest" ]; then
@@ -88,8 +88,8 @@ jobs:
           cd $GITHUB_WORKSPACE
           conda activate
           echo conda install -qy python=${PYVER#* } 
-          conda install --deps-only -c rsarg gr-bokehgui 
-          conda install --deps-only bokeh=2.3.1
+          conda install --only-deps -c rsarg gr-bokehgui 
+          conda install --only-deps bokeh=2.3.1
           conda install nodejs mpir numpy scipy pandas
           pushd $GITHUB_WORKSPACE
           npm install bokeh bokehjs
