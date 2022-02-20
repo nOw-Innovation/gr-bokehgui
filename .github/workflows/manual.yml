@@ -53,6 +53,24 @@ jobs:
           gnuradio-config-info -v
           grcc -h
 
+      - name: Miniconda
+        run: |
+          FILENAME="Miniconda3-py39_4.10.3-Linux-x86_64.sh"
+          SHA256="1ea2f885b4dbc3098662845560bc64271eb17085387a70c2ba3f29fff6f8d52f"
+          echo "$SHA256 $FILENAME" >checksha.sha256
+          wget https://repo.anaconda.com/miniconda/$FILENAME
+          sha256sum --check checksha.sha256 && bash $FILENAME -b
+          eval "$(${HOME}/miniconda3/bin/conda shell.bash hook)"
+          conda init
+          conda config --env --add channels conda-forge
+          conda config --env --set channel_priority strict
+
+      - name: Bokeh
+        run: |
+          conda activate
+          conda install -y bokeh nodejs numpy scipy pandas          
+          bokeh info
+
       # Run commands using the runners shell
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
