@@ -72,8 +72,9 @@ jobs:
           else
             if [ -f "~/miniconda3/etc/profile.d/conda.sh" ]; then
               source "~/miniconda3/etc/profile.d/conda.sh"
-          else
-            export PATH="~/miniconda3/bin:$PATH"
+            else
+              export PATH="~/miniconda3/bin:$PATH"
+            fi
           fi
           unset __conda_setup
           PY3VER=$(python3 --version)
