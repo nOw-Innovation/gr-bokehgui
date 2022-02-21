@@ -16,7 +16,7 @@ jobs:
         os: [ubuntu-latest]
         python-version: [ '3.9'  ]
     env:
-       MIRROR_ORG: nOw-Innovation
+       TMPTMPDIR: /tmp
        OS_CHOICE: ${{ matrix.os }}
        
     # Steps represent a sequence of tasks that will be executed as part of the job
@@ -62,11 +62,11 @@ jobs:
           wget https://repo.anaconda.com/miniconda/$FILENAME
           sha256sum --check checksha.sha256 && bash $FILENAME -b
           eval "$(${HOME}/miniconda3/bin/conda shell.bash hook)"
-          conda init -q bash
+          TMPDIR=${TMPTMPDIR} conda init -q bash
           conda config --env --add channels conda-forge
           conda config --env --set channel_priority strict
           conda deactivate
-          conda update -c defaults conda
+          TMPDIR=${TMPTMPDIR} conda update -c defaults conda
           exit
   
       - uses: actions/checkout@master
@@ -89,15 +89,15 @@ jobs:
           fi
           unset __conda_setup
           cd $GITHUB_WORKSPACE/src/bokeh
-          conda env create -f environment.yml
+          TMPDIR=${TMPTMPDIR} conda env create -f environment.yml
           conda activate bkdev
           cd $GITHUB_WORKSPACE/src/bokeh
           cd bokehjs
           sudo npm install -g npm@7
-          npm ci
+          TMPDIR=${TMPTMPDIR} npm ci
           cd ..
           echo "for 2.4: python scripts/hooks/install.py"
-          python setup.py install --build-js
+          TMPDIR=${TMPTMPDIR} python setup.py install --build-js
           echo Add other actions to build,test, and deploy your project.
 
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
@@ -117,8 +117,8 @@ jobs:
           fi
           unset __conda_setup
           conda activate bkdev
-          conda install -qy --only-deps -c rsarg gr-bokehgui 
-          conda install -qy mpir numpy scipy pandas
+          TMPDIR=${TMPTMPDIR} conda install -qy --only-deps -c rsarg gr-bokehgui 
+          TMPDIR=${TMPTMPDIR} conda install -qy mpir numpy scipy pandas
           mkdir build
           cd build
           cmake -G Ninja -DCMAKE_INSTALL_PREFIX=$CONDA_PREFIX -DCMAKE_PREFIX_PATH=$CONDA_PREFIX -DLIB_SUFFIX="" ..
