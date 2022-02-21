@@ -1,0 +1,88 @@
+# This basic workflow can be invoked manually to help develop and test Actions
+
+name: manual
+
+# Run this workflow manually from the Actions tab
+on: workflow_dispatch
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # This workflow contains a single job called "populate"
+  populate:
+    # Run on a single platform or use a matrix to test against several
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+        python-version: [ '3.9'  ]
+    env:
+       TMPTMPDIR: /tmp
+       OS_CHOICE: ${{ matrix.os }}
+       
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    name: gr-bokeh on ${{ matrix.os }} with python ${{ matrix.python-version }} 
+    steps:
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python-version }}
+          architecture: x64
+       
+      - name: Make a place to store logs
+        run:  mkdir -p ~/artifacts
+
+      - name: Security first
+        run: |
+          mkdir ~/logs
+          sudo apt update
+          sudo apt install -y unattended-upgrades
+          sudo unattended-upgrade -d >~/artifacts/securityFirst.log
+
+      - name: Ensure third-party apt support is installed
+        run: |
+          sudo apt install -y software-properties-common apt-utils 
+          if [ "${OS_CHOICE}" = "ubuntu-latest" ]; then
+             sudo add-apt-repository -y ppa:gnuradio/gnuradio-releases-3.9
+          fi
+          sudo apt update
+
+
+      - name: Miniconda
+        run: |
+          FILENAME="Miniconda3-py39_4.10.3-Linux-x86_64.sh"
+          SHA256="1ea2f885b4dbc3098662845560bc64271eb17085387a70c2ba3f29fff6f8d52f"
+          echo "$SHA256 $FILENAME" >checksha.sha256
+          wget https://repo.anaconda.com/miniconda/$FILENAME
+          sha256sum --check checksha.sha256 && bash $FILENAME -b
+          eval "$(${HOME}/miniconda3/bin/conda shell.bash hook)"
+          TMPDIR=${TMPTMPDIR} conda init -q bash
+          conda config --env --add channels conda-forge
+          conda config --env --set channel_priority strict
+          conda deactivate
+          TMPDIR=${TMPTMPDIR} conda update -qy -c defaults conda
+          exit
+  
+      - uses: actions/checkout@master
+
+      - name: Run a multi-line script
+        run: |
+          __conda_setup="$(~/miniconda3/bin/conda shell.bash hook 2> /dev/null)"
+          if [ $? -eq 0 ]; then
+            eval "$__conda_setup"
+          else
+            if [ -f "~/miniconda3/etc/profile.d/conda.sh" ]; then
+              source "~/miniconda3/etc/profile.d/conda.sh"
+            else
+              export PATH="~/miniconda3/bin:$PATH"
+            fi
+          fi
+          unset __conda_setup
+          conda activate
+          TMPDIR=${TMPTMPDIR} conda install -qy --only-deps -c rsarg gr-bokehgui 
+          TMPDIR=${TMPTMPDIR} conda install -qy mpir numpy scipy pandas
+          mkdir build
+          cd build
+          cmake -G Ninja -DCMAKE_INSTALL_PREFIX=$CONDA_PREFIX -DCMAKE_PREFIX_PATH=$CONDA_PREFIX -DLIB_SUFFIX="" ..
+          cmake --build .
+          cmake --build . --target install
+          
