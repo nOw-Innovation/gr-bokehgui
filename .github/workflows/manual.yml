@@ -79,7 +79,7 @@ jobs:
           unset __conda_setup
           conda activate
           TMPDIR=${TMPTMPDIR} conda install -qy --only-deps -c rsarg gr-bokehgui 
-          TMPDIR=${TMPTMPDIR} conda install -qy mpir numpy scipy pandas
+          TMPDIR=${TMPTMPDIR} conda install -qy gnuradio-build-deps mpir numpy scipy pandas
           mkdir build
           cd build
           cmake -G Ninja -DCMAKE_INSTALL_PREFIX=$CONDA_PREFIX -DCMAKE_PREFIX_PATH=$CONDA_PREFIX -DLIB_SUFFIX="" ..
