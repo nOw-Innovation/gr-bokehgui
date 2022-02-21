@@ -37,7 +37,6 @@ jobs:
           sudo apt update
           sudo apt install -y unattended-upgrades
           sudo unattended-upgrade -d >~/artifacts/securityFirst.log
-
       - name: Ensure third-party apt support is installed
         run: |
           sudo apt install -y software-properties-common apt-utils 
@@ -45,15 +44,6 @@ jobs:
              sudo add-apt-repository -y ppa:gnuradio/gnuradio-releases-3.9
           fi
           sudo apt update
-
-
-      - name: GNU ecosystem
-        run: |
-          sudo apt install -y python3-pip gnuradio gnuradio-dev
-          pip3 install six
-          gnuradio-config-info -v >~/artifacts/gnuEcosystem.log
-          grcc -h >>~/artifacts/gnuEcosystem.log
-
       - name: Miniconda
         run: |
           FILENAME="Miniconda3-py39_4.10.3-Linux-x86_64.sh"
@@ -66,41 +56,9 @@ jobs:
           conda config --env --add channels conda-forge
           conda config --env --set channel_priority strict
           conda deactivate
-          TMPDIR=${TMPTMPDIR} conda update -c defaults conda
+          TMPDIR=${TMPTMPDIR} conda update -qy -c defaults conda
           exit
   
-      - uses: actions/checkout@master
-        with:
-          repository: bokeh/bokeh
-          ref: refs/tags/2.3.1
-          path: 'src/bokeh'
-               
-      - name: build Bokeh from Source?
-        run: |
-          __conda_setup="$(~/miniconda3/bin/conda shell.bash hook 2> /dev/null)"
-          if [ $? -eq 0 ]; then
-            eval "$__conda_setup"
-          else
-            if [ -f "~/miniconda3/etc/profile.d/conda.sh" ]; then
-              source "~/miniconda3/etc/profile.d/conda.sh"
-            else
-              export PATH="~/miniconda3/bin:$PATH"
-            fi
-          fi
-          unset __conda_setup
-          cd $GITHUB_WORKSPACE/src/bokeh
-          TMPDIR=${TMPTMPDIR} conda env create -f environment.yml
-          conda activate bkdev
-          cd $GITHUB_WORKSPACE/src/bokeh
-          cd bokehjs
-          sudo npm install -g npm@7
-          TMPDIR=${TMPTMPDIR} npm ci
-          cd ..
-          echo "for 2.4: python scripts/hooks/install.py"
-          TMPDIR=${TMPTMPDIR} python setup.py install --build-js
-          echo Add other actions to build,test, and deploy your project.
-
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@master
 
       - name: Run a multi-line script
@@ -116,8 +74,9 @@ jobs:
             fi
           fi
           unset __conda_setup
-          conda activate bkdev
-          TMPDIR=${TMPTMPDIR} conda install -qy --only-deps -c rsarg gr-bokehgui 
+          conda activate
+          TMPDIR=${TMPTMPDIR} conda install -qy -c ryanvolz gnuradio-dev 
+          TMPDIR=${TMPTMPDIR} conda install -qy gnuradio gnuradio-build-deps nodejs  
           TMPDIR=${TMPTMPDIR} conda install -qy mpir numpy scipy pandas
           mkdir build
           cd build
