@@ -83,7 +83,6 @@ jobs:
           unset __conda_setup
           conda activate radioconda
           TMPDIR=${TMPTMPDIR} conda install -qy bokeh nodejs numpy scipy pandas
-          TMPDIR=${TMPTMPDIR} conda install -qy -c ryanvolz gnuradio-dev 
           TMPDIR=${TMPTMPDIR} conda upgrade --all
           TMPDIR=${TMPTMPDIR} mamba upgrade --all
           bokeh info
