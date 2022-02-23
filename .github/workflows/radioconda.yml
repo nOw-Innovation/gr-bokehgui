@@ -1,0 +1,113 @@
+# Build gr-bokehgui as an oot modules of gnuradio
+
+name: oot
+
+# Run this workflow manually from the Actions tab
+on: workflow_dispatch
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # This workflow contains a single job called "populate"
+  populate:
+    # Run on a single platform or use a matrix to test against several
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+        python-version: [ '3.9'  ]
+    env:
+       TMPTMPDIR: /tmp
+       OS_CHOICE: ${{ matrix.os }}
+       
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    name: gr-bokeh on ${{ matrix.os }} with python ${{ matrix.python-version }} 
+    steps:       
+      - name: Make a place to store logs
+        run:  mkdir -p ~/artifacts
+
+      - name: Security first
+        run: |
+          mkdir ~/logs
+          sudo apt update
+          sudo apt install -y software-properties-common apt-utils 2>~/artifacts/securityFirst.log >~/artifacts/securityFirst.log
+          sudo apt install -y unattended-upgrades 2>>~/artifacts/securityFirst.log >>~/artifacts/securityFirst.log
+          sudo unattended-upgrade -d 2>>~/artifacts/securityFirst.log >>~/artifacts/securityFirst.log
+
+      - name: Ensure third-party apt support is installed
+        run: |
+          if [ "${OS_CHOICE}" = "ubuntu-latest" ]; then
+             sudo add-apt-repository -y ppa:gnuradio/gnuradio-releases-3.9
+          fi
+          sudo apt update
+
+      - name: Miniconda
+        run: |
+          FILENAME="Miniconda3-py39_4.10.3-Linux-x86_64.sh"
+          SHA256="1ea2f885b4dbc3098662845560bc64271eb17085387a70c2ba3f29fff6f8d52f"
+          echo "$SHA256 $FILENAME" >checksha.sha256
+          wget https://repo.anaconda.com/miniconda/$FILENAME
+          sha256sum --check checksha.sha256 && bash $FILENAME -b
+          eval "$(${HOME}/miniconda3/bin/conda shell.bash hook)"
+          TMPDIR=${TMPTMPDIR} conda init -q bash
+          conda deactivate
+          TMPDIR=${TMPTMPDIR} conda update -qy -c defaults conda
+          exit
+
+      - name: Install GNU-radio using radioconda
+        run: |
+          __conda_setup="$(~/miniconda3/bin/conda shell.bash hook 2> /dev/null)"
+          if [ $? -eq 0 ]; then
+            eval "$__conda_setup"
+          else
+            if [ -f "~/miniconda3/etc/profile.d/conda.sh" ]; then
+              source "~/miniconda3/etc/profile.d/conda.sh"
+            else
+              export PATH="~/miniconda3/bin:$PATH"
+            fi
+          fi
+          unset __conda_setup
+          TMPDIR=${TMPTMPDIR} conda create -qyn radioconda -c conda-forge -c ryanvolz --only-deps radioconda
+
+      - name: Install Bokeh and NodeJS and activate and upgrade radioconda
+        run: |
+          __conda_setup="$(~/miniconda3/bin/conda shell.bash hook 2> /dev/null)"
+          if [ $? -eq 0 ]; then
+            eval "$__conda_setup"
+          else
+            if [ -f "~/miniconda3/etc/profile.d/conda.sh" ]; then
+              source "~/miniconda3/etc/profile.d/conda.sh"
+            else
+              export PATH="~/miniconda3/bin:$PATH"
+            fi
+          fi
+          unset __conda_setup
+          conda activate radioconda
+          TMPDIR=${TMPTMPDIR} conda install -qy bokeh nodejs numpy scipy pandas
+          TMPDIR=${TMPTMPDIR} conda install -qy -c ryanvolz gnuradio-dev 
+          TMPDIR=${TMPTMPDIR} conda upgrade --all
+          TMPDIR=${TMPTMPDIR} mamba upgrade --all
+          bokeh info
+          python -m bokeh info
+          
+      - uses: actions/checkout@master
+
+      - name: Build gr-bokehgui using cmake method
+        run: |
+          __conda_setup="$(~/miniconda3/bin/conda shell.bash hook 2> /dev/null)"
+          if [ $? -eq 0 ]; then
+            eval "$__conda_setup"
+          else
+            if [ -f "~/miniconda3/etc/profile.d/conda.sh" ]; then
+              source "~/miniconda3/etc/profile.d/conda.sh"
+            else
+              export PATH="~/miniconda3/bin:$PATH"
+            fi
+          fi
+          unset __conda_setup
+          conda activate radioconda
+          mkdir build
+          cd build
+          cmake -G Ninja -DCMAKE_INSTALL_PREFIX=$CONDA_PREFIX -DCMAKE_PREFIX_PATH=$CONDA_PREFIX -DLIB_SUFFIX="" ..
+          cmake --build .
+          cmake --build . --target install
+          
