@@ -84,8 +84,8 @@ jobs:
           conda activate radioconda
           TMPDIR=${TMPTMPDIR} conda install -qy bokeh nodejs numpy scipy pandas
           TMPDIR=${TMPTMPDIR} conda upgrade --all
-          bokeh info
-          python -m bokeh info
+          bokeh info | tee ~/artifacts/bokeh.log
+          python -m bokeh info  | tee ~/artifacts/bokeh.log
           
       - name: Checkout current branch
         uses: actions/checkout@master
