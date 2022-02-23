@@ -45,7 +45,7 @@ jobs:
           FILENAME="radioconda-2022.02.07-Linux-x86_64.sh"
           SHA256="f9a63e81d7ba581bfa2283b31259ecb7acd3e4647ac057ff84c828d400d91e84"
           echo "$SHA256 $FILENAME" >checksha.sha256
-          wget https://github.com/ryanvolz/radioconda/releases/download/2022.02.07/$FILENAME
+          wget -q https://github.com/ryanvolz/radioconda/releases/download/2022.02.07/$FILENAME
           sha256sum --check checksha.sha256 && bash $FILENAME -b
           eval "$(${HOME}/radioconda/bin/conda shell.bash hook)"
           TMPDIR=${TMPTMPDIR} conda init -q bash
@@ -66,7 +66,7 @@ jobs:
             fi
           fi
           unset __conda_setup
-          conda activate radioconda
+          conda activate
           TMPDIR=${TMPTMPDIR} conda install -qy bokeh nodejs numpy scipy pandas
           TMPDIR=${TMPTMPDIR} conda upgrade --all
           bokeh info | tee ~/artifacts/bokeh.log
@@ -88,7 +88,7 @@ jobs:
             fi
           fi
           unset __conda_setup
-          conda activate radioconda
+          conda activate
           echo TODO
           
       - name: Upload artifacts
