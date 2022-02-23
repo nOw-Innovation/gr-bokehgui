@@ -22,7 +22,7 @@ jobs:
     # Steps represent a sequence of tasks that will be executed as part of the job
     name: gr-bokeh on ${{ matrix.os }} with python ${{ matrix.python-version }} 
     steps:       
-      - name: Make a place to store logs
+      - name: Make a place to store artifacts
         run:  mkdir -p ~/artifacts
 
       - name: Security first
@@ -89,7 +89,8 @@ jobs:
           bokeh info
           python -m bokeh info
           
-      - uses: actions/checkout@master
+      - name: Checkout current branch
+        uses: actions/checkout@master
 
       - name: Build gr-bokehgui using cmake method
         run: |
@@ -111,3 +112,8 @@ jobs:
           cmake --build .
           cmake --build . --target install
           
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: log files
+          path: ~/artifacts/
