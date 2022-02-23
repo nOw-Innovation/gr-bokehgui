@@ -1,6 +1,6 @@
 # Build gr-bokehgui as an oot modules of gnuradio
 
-name: oot
+name: radioconda
 
 # Run this workflow manually from the Actions tab
 on: workflow_dispatch
