@@ -68,8 +68,8 @@ jobs:
       - name: Install npm 
         run: |
           sudo apt install -y npm nodejs
-          sudo npm install -g npm@8.5 node@16
-          sudo chown -R 1000:1000 "/root/.npm"
+          echo sudo npm install -g npm@8.5 node@16
+          echo sudo chown -R 1000:1000 "/root/.npm"
 
       - name: Checkout the current branch
         uses: actions/checkout@master
