@@ -88,7 +88,7 @@ jobs:
           npm install
           cd bokeh
           npm install
-          cd bokehjs
+          cd ../bokehjs
           npm install
           python3 setup.py install --buildjs
           python3 -m bokeh info >~/artifacts/bokeh.log
