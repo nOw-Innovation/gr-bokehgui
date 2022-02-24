@@ -92,7 +92,7 @@ jobs:
           cd ../bokehjs
           npm install
           popd
-          python3 setup.py install --build-js
+          python3 ./setup.py install --build-js || sudo python3 ./setup.py install --install-js 
           python3 -m bokeh info >~/artifacts/bokeh.log
           
       - name: Build gr-bokehgui with CMake
