@@ -86,10 +86,11 @@ jobs:
           cd build
           npm init -y
           npm install
-          cd bokeh
+          pushd bokeh
           npm install
           cd ../bokehjs
           npm install
+          popd
           python3 setup.py install --buildjs
           python3 -m bokeh info >~/artifacts/bokeh.log
           
