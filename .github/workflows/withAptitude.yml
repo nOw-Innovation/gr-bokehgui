@@ -48,33 +48,51 @@ jobs:
 
       - name: Install the tangled web 
         run: |
-          sudo apt install build-essential npm nodejs
-          sudo apt install git cmake g++ libboost-all-dev libgmp-dev swig python3-numpy \
+          sudo apt install -y build-essential npm nodejs cmake cmake-curses-gui ninja-build python3-pip
+          sudo apt install -y lrzip cmake g++ libboost-all-dev libgmp-dev swig python3-numpy \
                            python3-mako python3-sphinx python3-lxml doxygen libfftw3-dev \
                            libsdl1.2-dev libgsl-dev libqwt-qt5-dev libqt5opengl5-dev python3-pyqt5 \
                            liblog4cpp5-dev libzmq3-dev python3-yaml python3-click python3-click-plugins \
                            python3-zmq python3-scipy python3-gi python3-gi-cairo gir1.2-gtk-3.0 \
                            libcodec2-dev libgsm1-dev
-          sudo apt install pybind11-dev python3-matplotlib libsndfile1-dev \
+          sudo apt install -y pybind11-dev python3-matplotlib libsndfile1-dev \
                            python3-pip libsoapysdr-dev soapysdr-tools
           pip install pygccxml
           pip install pyqtgraph
-          sudo apt install libiio-dev libad9361-dev libspdlog-dev python3-packaging
+          sudo apt install -y libiio-dev libad9361-dev libspdlog-dev python3-packaging
 
       - name: Install gnuradio
         run: |
-          sudo apt install gnuradio gnuradio-dev
+          sudo apt install -y gnuradio gnuradio-dev
 
-      - name: Install bokeh 
+      - name: Install npm 
         run: |
-          echo npm install bokeh @bokeh/bokehjs
+          sudo apt install -y npm nodejs
+          sudo npm install -g npm@8.5 node@16
+          sudo chown -R 1000:1000 "/root/.npm"
 
       - name: Checkout the current branch
         uses: actions/checkout@master
 
-      - name: Build with CMake
+      - uses: actions/checkout@master
+        with:
+          repository: bokeh/bokeh
+          ref: refs/tags/2.3.1
+          path: 'build'
+          
+      - name: Install bokeh 
         run: |
-          mkdir build
+          cd build
+          npm install
+          cd bokeh
+          npm install
+          cd bokehjs
+          npm install
+          python3 setup.py install --buildjs
+          python3 -m bokeh info >~/artifacts/bokeh.log
+          
+      - name: Build gr-bokehgui with CMake
+        run: |
           cd build
           cmake ..
           cmake --build .
