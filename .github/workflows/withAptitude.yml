@@ -74,13 +74,14 @@ jobs:
       - name: Checkout the current branch
         uses: actions/checkout@master
 
-      - uses: actions/checkout@master
+      - name: Checkout 2.3.1? of bokehjs
+        uses: actions/checkout@master
         with:
           repository: bokeh/bokeh
           ref: refs/tags/2.3.1
           path: 'build'
           
-      - name: Install bokeh 
+      - name: Install bokeh and bokehjs
         run: |
           pip install bokeh
           cd build
@@ -91,7 +92,7 @@ jobs:
           cd ../bokehjs
           npm install
           popd
-          python3 setup.py install --buildjs
+          python3 setup.py install --build-js
           python3 -m bokeh info >~/artifacts/bokeh.log
           
       - name: Build gr-bokehgui with CMake
