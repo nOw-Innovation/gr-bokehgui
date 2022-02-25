@@ -1,0 +1,64 @@
+# Test the documentation -- always
+
+name: readInReverse
+
+# Run this workflow manually from the Actions tab
+on: workflow_dispatch
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # This workflow contains a single job called "populate"
+  populate:
+    # Run on a single platform or use a matrix to test against several
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-18.04,ubuntu-20.04]
+    env:
+       TMPTMPDIR: /tmp
+       OS_CHOICE: ${{ matrix.os }}
+       
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    name: gr-bokeh on ${{ matrix.os }} 
+    steps:       
+      - name: Make a place to store logs
+        run:  mkdir -p ~/artifacts
+
+      - name: Security first
+        run: |
+          mkdir ~/logs
+          sudo apt update
+          sudo apt install -y software-properties-common apt-utils 
+          sudo apt install -y unattended-upgrades
+          sudo unattended-upgrade -d >~/artifacts/securityFirst.log
+
+      - name: Install dependencies as needed
+        run: |
+          sudo apt install -qy build-essential npm nodejs cmake cmake-curses-gui ninja-build python3-pip
+          sudo apt install -qy texinfo gawk
+
+      - name: Checkout the current branch
+        uses: actions/checkout@master
+
+      - name: working folder
+        run: mkdir -p build
+
+      - name: Build gr-bokehgui with CMake
+        run: |
+          cd build
+          cmake ../
+          cmake --build .
+          sudo cmake --build . --target install
+                    
+      - name: Demonstrate that the tutorial will build as promised and is deployable
+        run: |
+          cd examples
+          grcc tutorial.grc
+          mkdir -p ~/artifacts/tutorial
+          cp tutorial.py ~/artifacts/tutorial
+          
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: log files
+          path: ~/artifacts/
