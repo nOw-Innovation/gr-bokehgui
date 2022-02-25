@@ -40,7 +40,7 @@ jobs:
           sudo apt install -qy libqwt-qt5-dev libqt5opengl5-dev python3-pyqt5 
           sudo apt install -qy python3-gi python3-gi-cairo gir1.2-gtk-3.0 
           sudo apt install -qy npm
-          sudo npm install -g npm@8.5 node@14
+          sudo npm install -g --force npm@8.5 node@14
           sudo npm install -g bokeh @bokeh/bokehjs
           pip3 install bokeh
           exit
