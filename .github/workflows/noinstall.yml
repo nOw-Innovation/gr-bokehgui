@@ -8,29 +8,36 @@ on: workflow_dispatch
 
 jobs:
   containerized:
+    name: Containerized execution
     runs-on: ubuntu-latest
     env:
        TMPTMPDIR: /tmp
     container: 
        image: gnuradio/ci:ubuntu-20.04-3.9
        env:
-         TMPTMPDIR: /tmp
-       
+         TMPTMPDIR: /tmp       
     # Steps represent a sequence of tasks that will be executed as part of the job
-    name: Containerized execution
     steps:     
       - name: Make a place to store logs
         run: |
           mkdir -p ~/artifacts
           touch ~/artifacts/IAMImage.id
-          echo 'gr_modtool info | tee ~/artifacts/sanity.logs'
-          bokeh info | tee -a ~/artifacts/sanity.logs
-          pushd ${TMPTMPDIR}
-          wget https://github.com/bokeh/bokeh/archive/refs/tags/$(bokeh --version).tar.gz      
-          tar -xvf $(bokeh --version).tar.gz bokeh-$(bokeh --version)/examples/app --strip-components=2
-          cp -r app/spectrogram ~/artifacts          
-          popd
-          
+
+      - name: Not in any place
+        uses: docker://gnuradio/ci:ubuntu-20.04-3.9
+        with:
+          entrypoint: /bin/bash
+          args: \
+            '<< EOF
+              gr_modtool info | tee ~/artifacts/sanity.logs
+              bokeh info | tee -a ~/artifacts/sanity.logs
+              pushd ${TMPTMPDIR}
+              wget https://github.com/bokeh/bokeh/archive/refs/tags/$(bokeh --version).tar.gz      
+              tar -xvf $(bokeh --version).tar.gz bokeh-$(bokeh --version)/examples/app --strip-components=2
+              cp -r app/spectrogram ~/artifacts          
+              popd
+              EOF
+            '
       - name: Upload artifacts from container?
         uses: actions/upload-artifact@v2
         with:
