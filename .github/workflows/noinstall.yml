@@ -1,0 +1,49 @@
+# Courtesy of https://dev.to/mihinduranasinghe/using-docker-containers-in-jobs-github-actions-3eof
+name: container
+on: push
+
+jobs:
+  node-docker:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: ubuntu-latest
+        container: 
+          image: [node:14.15.0-alpine3.12]
+      fail-fast: false
+    env:
+       TMPTMPDIR: /tmp
+       
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    name: gr-bokeh inside ${{ matrix.container.image }} on ${{ matrix.os }} 
+    steps:     
+      - name: Make a place to store logs
+        run: |
+          mkdir -p ~/artifacts
+          touch ~/artifacts/IAMImage.id
+        
+      - name: Log the node version
+        run: |
+          touch ~/artifacts/versions.log
+          node -v | tee -a ~/artifacts/versions.log
+          cat /etc/os-release | tee -a ~/artifacts/versions.log
+
+      - name: Upload artifacts from container?
+        uses: actions/upload-artifact@v2
+        with:
+          name: container artifacts
+          path: ~/artifacts/
+
+  host-artifacts:
+    steps:     
+    - name: Make a place to store logs
+      run: |
+        mkdir -p ~/artifacts
+        touch ~/artifacts/IAMHost.id
+        
+    - name: Upload artifacts from host 
+      uses: actions/upload-artifact@v2
+      with:
+        name: host artifacts
+          path: ~/artifacts/
+
