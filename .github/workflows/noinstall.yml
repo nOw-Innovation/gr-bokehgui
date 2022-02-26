@@ -12,7 +12,7 @@ jobs:
     env:
        TMPTMPDIR: /tmp
     container: 
-       image: gnuradio:basic
+       image: gnuradio:ubuntu-20.04-3.9
        env:
          TMPTMPDIR: /tmp
        
