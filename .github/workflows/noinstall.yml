@@ -1,0 +1,50 @@
+# Courtesy of https://dev.to/mihinduranasinghe/using-docker-containers-in-jobs-github-actions-3eof
+
+name: noinstall
+
+# Run this workflow manually from the Actions tab
+on: workflow_dispatch
+
+jobs:
+#  node-docker:
+#    fail-fast: false
+#    runs-on: ubuntu-latest
+#    container: 
+#       image: [node:14.15.0-alpine3.12]
+#       env:
+#         TMPTMPDIR: /tmp
+#       
+#    # Steps represent a sequence of tasks that will be executed as part of the job
+#    name: Containerized execution
+#    steps:     
+#      - name: Make a place to store logs
+#        run: |
+#          mkdir -p ~/artifacts
+#          touch ~/artifacts/IAMImage.id
+#        
+#      - name: Log the node version
+#        run: |
+#          touch ~/artifacts/versions.log
+#          node -v | tee -a ~/artifacts/versions.log
+#          cat /etc/os-release | tee -a ~/artifacts/versions.log
+#
+#     - name: Upload artifacts from container?
+#        uses: actions/upload-artifact@v2
+#        with:
+#          name: container artifacts
+#          path: ~/artifacts/
+#
+  host-artifacts:
+    runs-on: ubuntu-latest
+    steps:     
+    - name: Make a place to store logs
+      run: |
+        mkdir -p ~/artifacts
+        touch ~/artifacts/IAMHost.id
+        
+    - name: Upload artifacts from host 
+      uses: actions/upload-artifact@v2
+      with:
+        name: host artifacts
+          path: ~/artifacts/
+
