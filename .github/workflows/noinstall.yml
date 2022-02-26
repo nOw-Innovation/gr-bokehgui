@@ -1,10 +1,10 @@
-# Courtesy of https://dev.to/mihinduranasinghe/using-docker-containers-in-jobs-github-actions-3eof
+# Initial example courtesy https://dev.to/mihinduranasinghe/using-docker-containers-in-jobs-github-actions-3eof
 
 name: noinstall
 
 # Run this workflow manually from the Actions tab
 on: workflow_dispatch
-# fail-fast: false
+
 
 jobs:
   containerized:
@@ -12,7 +12,7 @@ jobs:
     env:
        TMPTMPDIR: /tmp
     container: 
-       image: node:14.15.0-alpine3.12
+       image: ghcr.io:cjam/gnuradio-docker
        env:
          TMPTMPDIR: /tmp
        
