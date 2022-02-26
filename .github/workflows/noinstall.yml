@@ -1,6 +1,9 @@
 # Courtesy of https://dev.to/mihinduranasinghe/using-docker-containers-in-jobs-github-actions-3eof
-name: container
-on: push
+
+name: noinstall
+
+# Run this workflow manually from the Actions tab
+on: workflow_dispatch
 
 jobs:
   node-docker:
