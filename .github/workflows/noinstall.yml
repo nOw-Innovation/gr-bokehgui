@@ -23,7 +23,20 @@ jobs:
         run: |
           mkdir -p ~/artifacts
           touch ~/artifacts/IAMImage.id
-        
+
+      - name: Checkout the current branch
+        uses: actions/checkout@master
+
+      - name: Sanity checks
+        run: |
+          gr_modtool info | tee ~/artifacts/sanity.logs
+          bokeh info | tee -a ~/artifacts/sanity.logs
+          pushd ${TMPTMPDIR}
+          wget https://github.com/bokeh/bokeh/archive/refs/tags/$(bokeh --version).tar.gz      
+          tar -xvf $(bokeh --version).tar.gz bokeh-$(bokeh --version)/examples/app --strip-components=2
+          cp -r app/spectrogram ~/artifacts
+          popd
+
       - name: Upload artifacts from container?
         uses: actions/upload-artifact@v2
         with:
