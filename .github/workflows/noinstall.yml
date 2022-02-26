@@ -34,7 +34,7 @@ jobs:
 #          name: container artifacts
 #          path: ~/artifacts/
 #
-  host-artifacts:
+  hosted:
     runs-on: ubuntu-latest
     steps:     
     - name: Make a place to store logs
@@ -46,5 +46,4 @@ jobs:
       uses: actions/upload-artifact@v2
       with:
         name: host artifacts
-          path: ~/artifacts/
-
+        path: ~/artifacts/
