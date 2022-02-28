@@ -124,6 +124,12 @@ jobs:
           cmake --build .
           sudo cmake --build . --target install          
           
+      - name: Did it work?
+        run: |
+          cd examples
+          grcc tutorial.grc
+          cp tutorial.py ~/artifacts
+          
       - name: Upload artifacts
         uses: actions/upload-artifact@v2
         with:
