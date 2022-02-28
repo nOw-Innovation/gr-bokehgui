@@ -14,7 +14,6 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest]
-        python-version: [ '3.8'  ]
     env:
        TMPTMPDIR: /tmp
        OS_CHOICE: ${{ matrix.os }}
@@ -22,31 +21,38 @@ jobs:
     # Steps represent a sequence of tasks that will be executed as part of the job
     name: gr-bokeh on ${{ matrix.os }} with python ${{ matrix.python-version }} 
     steps:
-      - name: Set up Python
-        uses: actions/setup-python@v2
-        with:
-          python-version: ${{ matrix.python-version }}
-          architecture: x64
-       
-      - name: Make a place to store logs
-        run:  mkdir -p ~/artifacts
-
-      - name: Security first
+      - name: Essential housekeeping
         run: |
-          mkdir ~/logs
+          mkdir -p ~/artifacts
           sudo apt update
+          
+      - name: Security first
+        if: true
+        run: |
           sudo apt install -y software-properties-common apt-utils 
           sudo apt install -y unattended-upgrades
           sudo unattended-upgrade -d >~/artifacts/securityFirst.log
 
-      - name: Ensure third-party apt support is installed
+      - name: Performance second
+        if: true
+        run:  sudo apt upgrade -qy
+
+      - name: Build essentials 
+        if: true
         run: |
-          if [ "${OS_CHOICE}" = "ubuntu-latest" ]; then
-             sudo add-apt-repository -y ppa:gnuradio/gnuradio-releases-3.9
-          fi
+          sudo apt install -qy build-essential cmake cmake-curses-gui ninja-build
+          sudo apt install -qy texinfo gawk g++ swig
+          sudo apt install -qy npm nodejs
+          sudo npm install -g npm@8.5
+ 
+      - name: Install GNUradio PPA
+        if: matrix.os == "ubuntu-latest"
+        run: |
+          sudo add-apt-repository -y ppa:gnuradio/gnuradio-releases-3.9
           sudo apt update
 
       - name: Install the tangled web 
+        if: false
         run: |
           sudo apt install -qy build-essential npm nodejs cmake cmake-curses-gui ninja-build python3-pip
           sudo apt install -qy lrzip cmake g++ libboost-all-dev libgmp-dev swig python3-numpy \
@@ -65,16 +71,11 @@ jobs:
         run: |
           sudo apt install -y gnuradio gnuradio-dev
 
-      - name: Install npm 
-        run: |
-          sudo apt install -y npm nodejs
-          echo sudo npm install -g npm@8.5 node@16
-          echo sudo chown -R 1000:1000 "/root/.npm"
-
       - name: Checkout the current branch
         uses: actions/checkout@master
 
       - name: Checkout 2.3.1? of bokehjs
+        if: false
         uses: actions/checkout@master
         with:
           repository: bokeh/bokeh
@@ -82,6 +83,7 @@ jobs:
           path: 'build'
           
       - name: Install bokeh and bokehjs
+        if: false
         run: |
           pip install bokeh
           cd build
@@ -93,15 +95,25 @@ jobs:
           npm install
           popd
           python3 ./setup.py install --build-js
-          python3 -m bokeh info >~/artifacts/bokeh.log
+
+      - name: Blacklist default version of Python 2
+        if: true
+        run: |
+          sudo apt remove --purge -y python || true
+          sudo apt autoremove 
+          python3 -m pip install --user --upgrade pip
           
+      - name: use pip to install bokeh
+        run: |
+          pip install bokeh
+
       - name: Build gr-bokehgui with CMake
         run: |
+          python3 -m bokeh info >~/artifacts/bokeh.log
           cd build
           cmake ..
           cmake --build .
-          sudo cmake --build . --target install
-          
+          sudo cmake --build . --target install          
           
       - name: Upload artifacts
         uses: actions/upload-artifact@v2
