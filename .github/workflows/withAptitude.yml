@@ -21,7 +21,7 @@ jobs:
        OS_CHOICE: ${{ matrix.os }}
        
     # Steps represent a sequence of tasks that will be executed as part of the job
-    name: gr-bokeh on ${{ matrix.os }} with python ${{ matrix.python-version }} 
+    name: gr-bokeh with gnuradio ${{ matrix.gr }} and bokeh ${{ matrix.bokeh }} on ${{ matrix.os }}
     steps:
       - name: Essential housekeeping
         run: |
