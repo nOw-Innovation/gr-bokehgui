@@ -48,13 +48,13 @@ jobs:
           sudo npm install -g npm@8.5
  
       - name: Install GNUradio PPA 3.9
-        if: ${{ matrix.os == 'ubuntu-latest'  && matrix.gr == 3.9 }}
+        if: ${{ matrix.os == 'ubuntu-latest'  && matrix.gr == '3.9' }}
         run: |
           sudo add-apt-repository -y ppa:gnuradio/gnuradio-releases-3.9
           sudo apt update
 
       - name: Install GNUradio PPA 3.10
-        if: ${{ matrix.os == 'ubuntu-latest'  && matrix.gr == 3.10 }}
+        if: ${{ matrix.os == 'ubuntu-latest'  && matrix.gr == '3.10' }}
         run: |
           sudo add-apt-repository -y ppa:gnuradio/gnuradio-releases
           sudo apt update
@@ -90,7 +90,7 @@ jobs:
         uses: actions/checkout@master
 
       - name: Checkout 2.3.1 of bokehjs
-        if: ${{ matrix.bokeh == 2.3.1 }}
+        if: ${{ matrix.bokeh == '2.3.1' }}
         uses: actions/checkout@master
         with:
           repository: bokeh/bokeh
@@ -98,7 +98,7 @@ jobs:
           path: 'build'
           
       - name: Install bokeh and bokehjs
-        if: ${{ matrix.bokeh == 2.3.1 }}
+        if: ${{ matrix.bokeh == '2.3.1' }}
         run: |
           pip install bokeh
           cd build
@@ -112,7 +112,7 @@ jobs:
           python3 ./setup.py install --build-js
 
       - name: use pip to install bokeh
-        if: ${{ matrix.bokeh == 2.4.2 }}
+        if: ${{ matrix.bokeh == '2.4.2' }}
         run: |
           pip install bokeh
 
