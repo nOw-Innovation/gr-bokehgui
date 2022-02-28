@@ -102,7 +102,6 @@ jobs:
       - name: Install bokeh and bokehjs
         if: ${{ matrix.bokeh == '2.3.1.' }}
         run: |
-          pip install bokeh
           cd build
           npm init -y
           npm install
@@ -120,6 +119,7 @@ jobs:
 
       - name: Build gr-bokehgui with CMake
         run: |
+          gnuradio-config-info --print-all >~/artifacts/gnuradio.log
           python3 -m bokeh info >~/artifacts/bokeh.log
           mkdir -p build && cd build
           cmake ..
