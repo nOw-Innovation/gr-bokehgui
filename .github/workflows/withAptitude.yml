@@ -67,6 +67,11 @@ jobs:
           sudo apt update
           sudo apt install -qy libiio-dev libad9361-dev libspdlog-dev python3-packaging
 
+      - name: Additions
+        if: true
+        run: |
+          sudo apt install -qy liborc-dev
+
       - name: Other possible requirements (enable as needed)
         if: false
         run: |
