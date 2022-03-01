@@ -13,9 +13,9 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-18.04,ubuntu-20.04]
+        os: [ubuntu-18.04, ubuntu-20.04]
         gr: [3.8.]
-        bokeh: [2.3.1,2.x.]
+        bokeh: [2.3.1, 2.x.]
       fail-fast: false
     env:
        TMPTMPDIR: /tmp
@@ -48,7 +48,7 @@ jobs:
           sudo apt install -qy npm nodejs
           sudo npm install -g npm@8.5
  
-      - name: Install GNUradio PPA 3.9
+      - name: Install GNUradio PPA 3.8
         if: ${{ startswith(matrix.os,'ubuntu') && matrix.gr == '3.8.' }}
         run: |
           sudo add-apt-repository -y ppa:gnuradio/gnuradio-releases-3.8
@@ -97,16 +97,16 @@ jobs:
       - name: Checkout the current branch
         uses: actions/checkout@master
 
-      - name: Checkout 2.3.1 of bokehjs
-        if: ${{ matrix.bokeh == '2.3.1.' }}
+      - name: Checkout ${{ matrix.bokeh }} of bokeh/bokehjs
+        if: ${{ matrix.bokeh != '2.x.' }}
         uses: actions/checkout@master
         with:
           repository: bokeh/bokeh
-          ref: refs/tags/2.3.1
+          ref: refs/tags/${{ matrix.bokeh }}
           path: 'build'
           
       - name: Install bokeh and bokehjs
-        if: ${{ matrix.bokeh == '2.3.1.' }}
+        if: ${{ matrix.bokeh != '2.x.' }}
         run: |
           cd build
           npm init -y
