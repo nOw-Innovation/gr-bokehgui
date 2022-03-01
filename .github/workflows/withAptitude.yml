@@ -14,8 +14,8 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-18.04,ubuntu-20.04]
-        gr: [3.x.]
-        bokeh: [2.x.]
+        gr: [3.8.]
+        bokeh: [2.3.1,2.x.]
       fail-fast: false
     env:
        TMPTMPDIR: /tmp
@@ -48,6 +48,12 @@ jobs:
           sudo apt install -qy npm nodejs
           sudo npm install -g npm@8.5
  
+      - name: Install GNUradio PPA 3.9
+        if: ${{ startswith(matrix.os,'ubuntu') && matrix.gr == '3.8.' }}
+        run: |
+          sudo add-apt-repository -y ppa:gnuradio/gnuradio-releases-3.8
+          sudo apt update
+
       - name: Install GNUradio PPA 3.9
         if: ${{ matrix.os == 'ubuntu-latest'  && matrix.gr == '3.9.' }}
         run: |
@@ -119,7 +125,10 @@ jobs:
 
       - name: Build gr-bokehgui with CMake
         run: |
-          gnuradio-config-info --print-all >~/artifacts/gnuradio.log
+          gnuradio-config-info --version  >~/artifacts/gnuradio.log
+          gnuradio-config-info --prefix --prefs >>~/artifacts/gnuradio.log
+          gnuradio-config-info --enabled-components >>~/artifacts/gnuradio.log
+          gnuradio-config-info --cc --cxx --cflags >>~/artifacts/gnuradio.log
           python3 -m bokeh info >~/artifacts/bokeh.log
           mkdir -p build && cd build
           cmake ..
@@ -135,5 +144,5 @@ jobs:
       - name: Upload artifacts
         uses: actions/upload-artifact@v2
         with:
-          name: artifacts gr=${{matrix.gr}} bokeh=${{matrix.bokeh}} 
+          name: gr=${{matrix.gr}}_bokeh=${{matrix.bokeh}}_os=${{matrix.os}}
           path: ~/artifacts/
