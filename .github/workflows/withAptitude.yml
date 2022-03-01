@@ -93,6 +93,7 @@ jobs:
           sudo apt remove --purge -y python || true
           sudo apt autoremove 
           python3 -m pip install --user --upgrade pip
+          pip install setuptools
           
       - name: Checkout the current branch
         uses: actions/checkout@master
