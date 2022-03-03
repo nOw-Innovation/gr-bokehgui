@@ -55,13 +55,13 @@ jobs:
           sudo apt update
 
       - name: Install GNUradio PPA 3.9
-        if: ${{ matrix.os == 'ubuntu-latest'  && matrix.gr == '3.9.' }}
+        if: ${{ startswith(matrix.os,'ubuntu')  && matrix.gr == '3.9.' }}
         run: |
           sudo add-apt-repository -y ppa:gnuradio/gnuradio-releases-3.9
           sudo apt update
 
       - name: Install GNUradio PPA 3.10
-        if: ${{ matrix.os == 'ubuntu-latest'  && matrix.gr == '3.10.' }}
+        if: ${{ startswith(matrix.os,'ubuntu')  && matrix.gr == '3.10.' }}
         run: |
           sudo add-apt-repository -y ppa:gnuradio/gnuradio-releases
           sudo apt update
