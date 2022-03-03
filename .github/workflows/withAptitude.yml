@@ -1,4 +1,4 @@
-# Not cross-platform, but works
+# Rely on Aptitude to install dependencies and latest security updates
 
 name: withAptitude
 
@@ -17,9 +17,6 @@ jobs:
         gr: [3.8.]
         bokeh: [2.3.1, 2.x.]
       fail-fast: false
-    env:
-       TMPTMPDIR: /tmp
-       OS_CHOICE: ${{ matrix.os }}
        
     # Steps represent a sequence of tasks that will be executed as part of the job
     name: gr-bokeh with gnuradio ${{ matrix.gr }} and bokeh ${{ matrix.bokeh }} on ${{ matrix.os }}
@@ -97,6 +94,7 @@ jobs:
         run: |
           sudo apt remove --purge -y python || true
           sudo apt autoremove 
+          sudo apt install -y python3-pip
           python3 -m pip install --user --upgrade pip
           pip install setuptools
           
