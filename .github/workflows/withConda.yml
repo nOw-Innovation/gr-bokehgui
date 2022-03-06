@@ -77,7 +77,7 @@ jobs:
           
       - name: use pip to install initial version bokeh
         run: |
-          pip2 install bokeh==${{ matrix.bokeh }} 
+          pip2 install bokeh 
           pip3 install bokeh==${{ matrix.bokeh }} 
 
       - name: Miniconda
