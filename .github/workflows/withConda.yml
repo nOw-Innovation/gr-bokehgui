@@ -80,20 +80,6 @@ jobs:
           pip2 install bokeh 
           pip3 install bokeh==${{ matrix.bokeh }} 
 
-      - name: Miniconda2
-        run: |
-          FILENAME="Miniconda2-4.7.12.1-Linux-x86_64.sh"
-          SHA256="383fe7b6c2574e425eee3c65533a5101e68a2d525e66356844a80aa02a556695"
-          echo "$SHA256 $FILENAME" >checksha.sha256
-          wget https://repo.anaconda.com/miniconda/$FILENAME
-          sha256sum --check checksha.sha256 && bash $FILENAME -b
-          eval "$(${HOME}/miniconda2/bin/conda shell.bash hook)"
-          TMPDIR=${TMPTMPDIR} conda init -q bash
-          conda config --env --add channels conda-forge
-          conda deactivate
-          TMPDIR=${TMPTMPDIR} conda update -qy -c defaults conda
-          exit
-
       - name: Miniconda3
         run: |
           FILENAME="Miniconda3-py39_4.10.3-Linux-x86_64.sh"
@@ -110,7 +96,7 @@ jobs:
 
       - uses: actions/checkout@master
 
-      - name: Rely on rsarg channel on conda to pick best dependencies
+      - name: Rely on rsarg channel on conda to pick conda3 dependencies
         run: |
           pushd ~
           __conda_setup="$(~/miniconda3/bin/conda shell.bash hook 2> /dev/null)"
@@ -154,7 +140,64 @@ jobs:
           cmake --build .
           cmake --build . --target install
           
+      - name: Did it work (conda3)?
+        run: |
+          pushd ~
+          __conda_setup="$(~/miniconda3/bin/conda shell.bash hook 2> /dev/null)"
+          if [ $? -eq 0 ]; then
+            eval "$__conda_setup"
+          else
+            if [ -f "~/miniconda3/etc/profile.d/conda.sh" ]; then
+              source "~/miniconda3/etc/profile.d/conda.sh"
+            else
+              export PATH="~/miniconda3/bin:$PATH"
+            fi
+          fi
+          unset __conda_setup
+          conda activate
+          popd
+          mkdir -p test && cd test
+          cp -r ../examples .
+          cd examples
+          grcc tutorial.grc
+          cp tutorial.py ~/artifacts/tutorial3.py
+          
+      - name: Miniconda2
+        if: true
+        run: |
+          FILENAME="Miniconda2-4.7.12.1-Linux-x86_64.sh"
+          SHA256="383fe7b6c2574e425eee3c65533a5101e68a2d525e66356844a80aa02a556695"
+          echo "$SHA256 $FILENAME" >checksha.sha256
+          wget https://repo.anaconda.com/miniconda/$FILENAME
+          sha256sum --check checksha.sha256 && bash $FILENAME -b
+          eval "$(${HOME}/miniconda2/bin/conda shell.bash hook)"
+          TMPDIR=${TMPTMPDIR} conda init -q bash
+          conda config --env --add channels conda-forge
+          conda deactivate
+          TMPDIR=${TMPTMPDIR} conda update -qy -c defaults conda
+          exit
+
+      - name: Rely on rsarg channel on conda to pick conda2 dependencies
+        if: true
+        run: |
+          pushd ~
+          __conda_setup="$(~/miniconda2/bin/conda shell.bash hook 2> /dev/null)"
+          if [ $? -eq 0 ]; then
+            eval "$__conda_setup"
+          else
+            if [ -f "~/miniconda2/etc/profile.d/conda.sh" ]; then
+              source "~/miniconda2/etc/profile.d/conda.sh"
+            else
+              export PATH="~/miniconda2/bin:$PATH"
+            fi
+          fi
+          unset __conda_setup
+          conda activate
+          popd
+          TMPDIR=${TMPTMPDIR} conda install -qy -c rsarg --only-deps gr-bokehgui
+          
       - name: Build gr-bokehgui with CMake for conda2
+        if: true
         run: |
           pushd ~
           __conda_setup="$(~/miniconda2/bin/conda shell.bash hook 2> /dev/null)"
@@ -180,29 +223,8 @@ jobs:
           cmake --build .
           cmake --build . --target install 
           
-      - name: Did it work (conda3)?
-        run: |
-          pushd ~
-          __conda_setup="$(~/miniconda3/bin/conda shell.bash hook 2> /dev/null)"
-          if [ $? -eq 0 ]; then
-            eval "$__conda_setup"
-          else
-            if [ -f "~/miniconda3/etc/profile.d/conda.sh" ]; then
-              source "~/miniconda3/etc/profile.d/conda.sh"
-            else
-              export PATH="~/miniconda3/bin:$PATH"
-            fi
-          fi
-          unset __conda_setup
-          conda activate
-          popd
-          mkdir -p test && cd test
-          cp -r ../examples .
-          cd examples
-          grcc tutorial.grc
-          cp tutorial.py ~/artifacts/tutorial3.py
-          
       - name: Did it work (conda2)?
+        if: true
         run: |
           pushd ~
           __conda_setup="$(~/miniconda2/bin/conda shell.bash hook 2> /dev/null)"
