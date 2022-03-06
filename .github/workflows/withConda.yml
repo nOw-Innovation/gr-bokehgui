@@ -175,7 +175,7 @@ jobs:
           gnuradio-config-info --enabled-components | tee -a ~/artifacts/gnuradio.log
           gnuradio-config-info --cc --cxx --cflags | tee -a ~/artifacts/gnuradio.log
           python2 -m bokeh info | tee -a ~/artifacts/bokeh.log
-          mkdir -p build && cd build
+          mkdir -p build2 && cd build2
           cmake -G Ninja -DCMAKE_INSTALL_PREFIX=$CONDA_PREFIX -DCMAKE_PREFIX_PATH=$CONDA_PREFIX -DLIB_SUFFIX="" ..
           cmake --build .
           cmake --build . --target install 
