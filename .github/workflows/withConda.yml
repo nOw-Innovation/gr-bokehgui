@@ -1,5 +1,4 @@
-# Rely on Aptitude to install dependencies and latest security updates
-
+# Rely on MiniConda to solve for dependencies and latest security updates
 name: withConda
 
 # Run this workflow manually from the Actions tab
@@ -116,7 +115,7 @@ jobs:
           popd
           TMPDIR=${TMPTMPDIR} conda install -qy -c rsarg --only-deps gr-bokehgui
           
-       - name: Build gr-bokehgui with CMake
+      - name: Build gr-bokehgui with CMake
         run: |
           pushd ~
           __conda_setup="$(~/miniconda3/bin/conda shell.bash hook 2> /dev/null)"
