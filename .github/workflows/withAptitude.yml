@@ -120,7 +120,9 @@ jobs:
           cd ../bokehjs
           npm install
           popd
-          python3 ./setup.py install --build-js || sudo python3 ./setup.py install --install-js 
+          pip3 install bokeh==${{ matrix.bokeh }} || \
+            python3 ./setup.py install --build-js || \
+            sudo python3 ./setup.py install --install-js 
 
       - name: use pip to install bokeh
         if: ${{ matrix.bokeh == '2.x.' }}
