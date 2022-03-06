@@ -66,7 +66,7 @@ jobs:
         run: |
           sudo apt install -qy libiio-dev libad9361-dev libspdlog-dev python3-packaging
           sudo apt install -qy liborc-dev
-          sudo apt install -y gnuradio gnuradio-dev
+          sudo apt install -qy gnuradio gnuradio-dev
 
       - name: Prefer Python 3
         if: true
@@ -144,7 +144,7 @@ jobs:
           unset __conda_setup
           conda activate
           popd
-          gnuradio-config-info --version  | tee -a /artifacts/gnuradio.log
+          gnuradio-config-info --version  | tee -a ~/artifacts/gnuradio.log
           gnuradio-config-info --prefix --prefs | tee -a ~/artifacts/gnuradio.log
           gnuradio-config-info --enabled-components | tee -a ~/artifacts/gnuradio.log
           gnuradio-config-info --cc --cxx --cflags | tee -a ~/artifacts/gnuradio.log
@@ -152,7 +152,7 @@ jobs:
           mkdir -p build && cd build
           cmake -G Ninja -DCMAKE_INSTALL_PREFIX=$CONDA_PREFIX -DCMAKE_PREFIX_PATH=$CONDA_PREFIX -DLIB_SUFFIX="" ..
           cmake --build .
-          cmake --build . --target install || sudo cmake --build . --target install          
+          cmake --build . --target install
           
       - name: Build gr-bokehgui with CMake for conda2
         run: |
@@ -170,7 +170,7 @@ jobs:
           unset __conda_setup
           conda activate
           popd
-          gnuradio-config-info --version  | tee -a /artifacts/gnuradio.log
+          gnuradio-config-info --version  | tee -a ~/artifacts/gnuradio.log
           gnuradio-config-info --prefix --prefs | tee -a ~/artifacts/gnuradio.log
           gnuradio-config-info --enabled-components | tee -a ~/artifacts/gnuradio.log
           gnuradio-config-info --cc --cxx --cflags | tee -a ~/artifacts/gnuradio.log
@@ -178,7 +178,7 @@ jobs:
           mkdir -p build && cd build
           cmake -G Ninja -DCMAKE_INSTALL_PREFIX=$CONDA_PREFIX -DCMAKE_PREFIX_PATH=$CONDA_PREFIX -DLIB_SUFFIX="" ..
           cmake --build .
-          cmake --build . --target install || sudo cmake --build . --target install          
+          cmake --build . --target install 
           
       - name: Did it work (conda3)?
         run: |
