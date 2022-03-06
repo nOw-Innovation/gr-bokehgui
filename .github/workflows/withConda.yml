@@ -136,9 +136,9 @@ jobs:
           gnuradio-config-info --cc --cxx --cflags >>~/artifacts/gnuradio.log
           python3 -m bokeh info >~/artifacts/bokeh.log
           mkdir -p build && cd build
-          cmake ..
+          cmake -G Ninja -DCMAKE_INSTALL_PREFIX=$CONDA_PREFIX -DCMAKE_PREFIX_PATH=$CONDA_PREFIX -DLIB_SUFFIX="" ..
           cmake --build .
-          sudo cmake --build . --target install          
+          cmake --build . --target install          
           
       - name: Did it work?
         run: |
