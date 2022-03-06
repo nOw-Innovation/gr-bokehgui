@@ -68,17 +68,16 @@ jobs:
           sudo apt install -qy liborc-dev
           sudo apt install -y gnuradio gnuradio-dev
 
-      - name: Blacklist default version of Python 2
+      - name: Prefer Python 3
         if: true
         run: |
-          sudo apt remove --purge -y python || true
-          sudo apt autoremove 
           sudo apt install -y python3-pip
           python3 -m pip install --user --upgrade pip
           pip install setuptools
           
       - name: use pip to install initial version bokeh
         run: |
+          pip2 install bokeh==${{ matrix.bokeh }} 
           pip3 install bokeh==${{ matrix.bokeh }} 
 
       - name: Miniconda
@@ -143,6 +142,20 @@ jobs:
           
       - name: Did it work?
         run: |
+          pushd ~
+          __conda_setup="$(~/miniconda3/bin/conda shell.bash hook 2> /dev/null)"
+          if [ $? -eq 0 ]; then
+            eval "$__conda_setup"
+          else
+            if [ -f "~/miniconda3/etc/profile.d/conda.sh" ]; then
+              source "~/miniconda3/etc/profile.d/conda.sh"
+            else
+              export PATH="~/miniconda3/bin:$PATH"
+            fi
+          fi
+          unset __conda_setup
+          conda activate
+          popd
           cd examples
           grcc tutorial.grc
           cp tutorial.py ~/artifacts
