@@ -128,7 +128,7 @@ jobs:
           popd
           TMPDIR=${TMPTMPDIR} conda install -qy -c rsarg --only-deps gr-bokehgui
           
-      - name: Build gr-bokehgui with CMake
+      - name: Build gr-bokehgui with CMake for conda3
         run: |
           pushd ~
           __conda_setup="$(~/miniconda3/bin/conda shell.bash hook 2> /dev/null)"
@@ -144,17 +144,43 @@ jobs:
           unset __conda_setup
           conda activate
           popd
-          gnuradio-config-info --version  >~/artifacts/gnuradio.log
-          gnuradio-config-info --prefix --prefs >>~/artifacts/gnuradio.log
-          gnuradio-config-info --enabled-components >>~/artifacts/gnuradio.log
-          gnuradio-config-info --cc --cxx --cflags >>~/artifacts/gnuradio.log
-          python3 -m bokeh info >~/artifacts/bokeh.log
+          gnuradio-config-info --version  | tee -a /artifacts/gnuradio.log
+          gnuradio-config-info --prefix --prefs | tee -a ~/artifacts/gnuradio.log
+          gnuradio-config-info --enabled-components | tee -a ~/artifacts/gnuradio.log
+          gnuradio-config-info --cc --cxx --cflags | tee -a ~/artifacts/gnuradio.log
+          python3 -m bokeh info | tee -a ~/artifacts/bokeh.log
           mkdir -p build && cd build
           cmake -G Ninja -DCMAKE_INSTALL_PREFIX=$CONDA_PREFIX -DCMAKE_PREFIX_PATH=$CONDA_PREFIX -DLIB_SUFFIX="" ..
           cmake --build .
-          sudo cmake --build . --target install          
+          cmake --build . --target install || sudo cmake --build . --target install          
           
-      - name: Did it work?
+      - name: Build gr-bokehgui with CMake for conda2
+        run: |
+          pushd ~
+          __conda_setup="$(~/miniconda2/bin/conda shell.bash hook 2> /dev/null)"
+          if [ $? -eq 0 ]; then
+            eval "$__conda_setup"
+          else
+            if [ -f "~/miniconda2/etc/profile.d/conda.sh" ]; then
+              source "~/miniconda2/etc/profile.d/conda.sh"
+            else
+              export PATH="~/miniconda2/bin:$PATH"
+            fi
+          fi
+          unset __conda_setup
+          conda activate
+          popd
+          gnuradio-config-info --version  | tee -a /artifacts/gnuradio.log
+          gnuradio-config-info --prefix --prefs | tee -a ~/artifacts/gnuradio.log
+          gnuradio-config-info --enabled-components | tee -a ~/artifacts/gnuradio.log
+          gnuradio-config-info --cc --cxx --cflags | tee -a ~/artifacts/gnuradio.log
+          python2 -m bokeh info | tee -a ~/artifacts/bokeh.log
+          mkdir -p build && cd build
+          cmake -G Ninja -DCMAKE_INSTALL_PREFIX=$CONDA_PREFIX -DCMAKE_PREFIX_PATH=$CONDA_PREFIX -DLIB_SUFFIX="" ..
+          cmake --build .
+          cmake --build . --target install || sudo cmake --build . --target install          
+          
+      - name: Did it work (conda3)?
         run: |
           pushd ~
           __conda_setup="$(~/miniconda3/bin/conda shell.bash hook 2> /dev/null)"
@@ -172,8 +198,29 @@ jobs:
           popd
           cd examples
           grcc tutorial.grc
-          cp tutorial.py ~/artifacts
+          cp tutorial.py ~/artifacts/tutorial3.py
           
+      - name: Did it work (conda2)?
+        run: |
+          pushd ~
+          __conda_setup="$(~/miniconda2/bin/conda shell.bash hook 2> /dev/null)"
+          if [ $? -eq 0 ]; then
+            eval "$__conda_setup"
+          else
+            if [ -f "~/miniconda2/etc/profile.d/conda.sh" ]; then
+              source "~/miniconda2/etc/profile.d/conda.sh"
+            else
+              export PATH="~/miniconda2/bin:$PATH"
+            fi
+          fi
+          unset __conda_setup
+          conda activate
+          popd
+          cd examples
+          grcc tutorial.grc
+          cp tutorial.py ~/artifacts.tutorial2.py
+          
+
       - name: Upload artifacts
         uses: actions/upload-artifact@v2
         with:
