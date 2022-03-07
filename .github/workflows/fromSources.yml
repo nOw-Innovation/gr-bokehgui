@@ -1,5 +1,5 @@
-# Rely on MiniConda to solve for dependencies and latest security updates
-name: withConda
+# Build from sources for older architectures
+name: fromSources
 
 # Run this workflow manually from the Actions tab
 on: workflow_dispatch
