@@ -13,7 +13,7 @@ jobs:
     env:
        TMPTMPDIR: /tmp
     container: 
-       image: gnuradio/ci:ubuntu-20.04-3.9
+       image: ros:noetic-ros-core
        env:
          TMPTMPDIR: /tmp       
     # Steps represent a sequence of tasks that will be executed as part of the job
@@ -25,7 +25,7 @@ jobs:
 
       - name: Test a command
         run: |
-          if ! $(which gnuradio-companion); then
+          if ! $(which rosdep); then
              echo Not found
           fi
 
@@ -48,7 +48,7 @@ jobs:
 
     - name: Test a command
       run: |
-        if ! $(which gnuradio-companion); then
+        if ! $(which rosdep); then
            echo Not found
         fi
 
