@@ -25,7 +25,9 @@ jobs:
 
       - name: Test a command
         run: |
-          which gnuradio-companion
+          if ! $(which gnuradio-companion); then
+             echo Not found
+          fi
 
       - name: Upload artifacts from container?
         uses: actions/upload-artifact@v2
@@ -46,7 +48,9 @@ jobs:
 
     - name: Test a command
       run: |
-        which gnuradio-companion
+        if ! $(which gnuradio-companion); then
+           echo Not found
+        fi
 
     - name: Upload artifacts from host 
       uses: actions/upload-artifact@v2
