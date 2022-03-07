@@ -25,6 +25,8 @@ jobs:
 
       - name: Test a command
         run: |
+          whoami
+          uname -a
           if ! $(which rosdep); then
              echo Not found
           fi
@@ -48,6 +50,8 @@ jobs:
 
     - name: Test a command
       run: |
+        whoami
+        uname -a
         if ! $(which rosdep); then
            echo Not found
         fi
