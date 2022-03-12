@@ -12,9 +12,9 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-18.04]
-        gr: [3.8.]
-        bokeh: [2.0.2, 2.3.3]
+        os: [ubuntu-latest]
+        gr: [3.x.]
+        bokeh: [2.x.]
       fail-fast: false
     env:
        TMPTMPDIR: /tmp
@@ -46,41 +46,20 @@ jobs:
           sudo apt install -qy npm nodejs
           sudo npm install -g npm@8.5
  
-      - name: Other possible requirements (enable as needed)
-        if: false
-        run: |
-          sudo apt install -qy build-essential npm nodejs cmake cmake-curses-gui ninja-build python3-pip
-          sudo apt install -qy lrzip cmake g++ libboost-all-dev libgmp-dev swig python3-numpy \
-                           python3-mako python3-sphinx python3-lxml doxygen libfftw3-dev \
-                           libsdl1.2-dev libgsl-dev libqwt-qt5-dev libqt5opengl5-dev python3-pyqt5 \
-                           liblog4cpp5-dev libzmq3-dev python3-yaml python3-click python3-click-plugins \
-                           python3-zmq python3-scipy python3-gi python3-gi-cairo gir1.2-gtk-3.0 \
-                           libcodec2-dev libgsm1-dev
-          sudo apt install -qy pybind11-dev python3-matplotlib libsndfile1-dev \
-                           python3-pip libsoapysdr-dev soapysdr-tools
-          pip install pygccxml
-          pip install pyqtgraph
-          sudo apt install -qy libiio-dev libad9361-dev libspdlog-dev python3-packaging
-
-      - name: Install gnuradio
+      - name: Install additional gnuradio dependencies 
         run: |
           sudo apt install -qy libiio-dev libad9361-dev libspdlog-dev python3-packaging
           sudo apt install -qy liborc-dev
-          sudo apt install -y gnuradio gnuradio-dev
 
-      - name: Prefer Python 3
+      - name: Prefer Python 3 when outside Conda
         if: true
         run: |
+          sudo apt remove --purge python
           sudo apt install -y python3-pip
           python3 -m pip install --user --upgrade pip
           pip install setuptools
           
-      - name: use pip to install initial version bokeh
-        run: |
-          pip2 install bokeh 
-          pip3 install bokeh==${{ matrix.bokeh }} 
-
-      - name: Miniconda
+      - name: Miniconda with mamba performance enhancements
         run: |
           FILENAME="Miniconda3-py39_4.10.3-Linux-x86_64.sh"
           SHA256="1ea2f885b4dbc3098662845560bc64271eb17085387a70c2ba3f29fff6f8d52f"
@@ -92,11 +71,12 @@ jobs:
           conda config --env --add channels conda-forge
           conda deactivate
           TMPDIR=${TMPTMPDIR} conda update -qy -c defaults conda
+          TMPDIR=${TMPTMPDIR} conda install mamba -n base -c conda-forge
           exit
   
       - uses: actions/checkout@master
 
-      - name: Rely on rsarg channel on conda to pick best dependencies
+      - name: Rely on mamba to install best version of gnuradio and bokeh
         run: |
           pushd ~
           __conda_setup="$(~/miniconda3/bin/conda shell.bash hook 2> /dev/null)"
@@ -112,7 +92,7 @@ jobs:
           unset __conda_setup
           conda activate
           popd
-          TMPDIR=${TMPTMPDIR} conda install -qy -c rsarg --only-deps gr-bokehgui
+          TMPDIR=${TMPTMPDIR} mamba install -qy -c gnuradio bokeh
           
       - name: Build gr-bokehgui with CMake
         run: |
@@ -138,7 +118,7 @@ jobs:
           mkdir -p build && cd build
           cmake ..
           cmake --build .
-          sudo cmake --build . --target install          
+          sudo cmake --build . --target install
           
       - name: Did it work?
         run: |
