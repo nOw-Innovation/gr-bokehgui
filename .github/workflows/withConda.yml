@@ -71,7 +71,7 @@ jobs:
           conda config --env --add channels conda-forge
           conda deactivate
           TMPDIR=${TMPTMPDIR} conda update -qy -c defaults conda
-          conda install mamba -n base -c conda-forge
+          conda install mamba -qy -n base -c conda-forge
           exit
   
       - uses: actions/checkout@master
