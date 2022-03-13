@@ -46,10 +46,10 @@ jobs:
           sudo apt install -qy npm nodejs
           sudo npm install -g npm@8.5
  
-      - name: Install additional gnuradio dependencies 
+      - name: Install latest additional gnuradio dependencies 
         run: |
           sudo apt install -qy libiio-dev libad9361-dev libspdlog-dev python3-packaging
-          sudo apt install -qy liborc-dev
+          sudo apt install -qy liborc-dev libfftw3-dev pybind11-dev libgmp-dev 
 
       - name: Prefer Python 3 when outside Conda
         if: true
@@ -92,7 +92,7 @@ jobs:
           unset __conda_setup
           conda activate
           popd
-          TMPDIR=${TMPTMPDIR} mamba install -qy -c conda-forge gnuradio bokeh
+          TMPDIR=${TMPTMPDIR} mamba install -qy -c conda-forge gnuradio gnuradio-build-deps bokeh mpir
           
       - name: Build gr-bokehgui with CMake
         run: |
@@ -115,8 +115,9 @@ jobs:
           gnuradio-config-info --enabled-components >>~/artifacts/gnuradio.log
           gnuradio-config-info --cc --cxx --cflags >>~/artifacts/gnuradio.log
           python3 -m bokeh info >~/artifacts/bokeh.log
+          TMPDIR=${TMPTMPDIR} mamba install -qy --only-deps -c rsarg gr-bokehgui
           mkdir -p build && cd build
-          cmake ..
+          cmake -G Ninja -DCMAKE_INSTALL_PREFIX=$CONDA_PREFIX -DCMAKE_PREFIX_PATH=$CONDA_PREFIX -DLIB_SUFFIX="" ..
           cmake --build .
           sudo cmake --build . --target install
           
