@@ -115,7 +115,6 @@ jobs:
           gnuradio-config-info --enabled-components >>~/artifacts/gnuradio.log
           gnuradio-config-info --cc --cxx --cflags >>~/artifacts/gnuradio.log
           python3 -m bokeh info >~/artifacts/bokeh.log
-          TMPDIR=${TMPTMPDIR} mamba install -qy --only-deps -c rsarg gr-bokehgui
           mkdir -p build && cd build
           cmake -G Ninja -DCMAKE_INSTALL_PREFIX=$CONDA_PREFIX -DCMAKE_PREFIX_PATH=$CONDA_PREFIX -DLIB_SUFFIX="" ..
           cmake --build .
