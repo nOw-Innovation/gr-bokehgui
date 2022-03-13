@@ -72,7 +72,7 @@ namespace gr {
 
         message_port_register_in(pmt::mp("in"));
         set_msg_handler(pmt::mp("in"),
-                        boost::bind(&base_sink<T>::handle_pdus, this, _1));
+                        boost::bind(&base_sink<T>::handle_pdus, this, std::placeholders::_1));
 
         const int alignment_multiple = volk_get_alignment() / (sizeof(T)*d_vlen);
         set_alignment(std::max(1, alignment_multiple));
